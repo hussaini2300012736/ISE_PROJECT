@@ -35,6 +35,12 @@ The system follows MVC / REST API architecture and uses RabbitMQ for asynchronou
 - Frontend: HTML + Bootstrap
 - Testing: PyTest
 
+## Team members
+- Manizha Hussaini
+- Bouchra Hanini
+
+
+
 ## Installation & Setup
 1. Clone the repository:
 ```bash
