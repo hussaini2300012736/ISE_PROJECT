@@ -38,5 +38,5 @@ The system follows MVC / REST API architecture and uses RabbitMQ for asynchronou
 ## Installation & Setup
 1. Clone the repository:
 ```bash
-git clone https://orkan.tu.kielce.pl/gitlab/ISE2026_TutoringBooking/tutoring-booking-system.git
+git clone https://orkan.tu.kielce.pl/gitlab/ISE_TutoringBooking/tutoring-booking-system.git
  
