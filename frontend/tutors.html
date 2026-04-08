@@ -1,18 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tutors</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
 <h2>Available Tutors</h2>
 
-<ul>
-    <li>Math Tutor - $10/hour <button>Book</button></li>
-    <li>Physics Tutor - $12/hour <button>Book</button></li>
-    <li>English Tutor - $8/hour <button>Book</button></li>
-</ul>
+<button onclick="loadTutors()">Load Tutors</button>
 
-</body>
-</html>
+<ul id="tutorList"></ul>
+
+<h3>Add Tutor</h3>
+
+<input id="name" placeholder="Name">
+<input id="subject" placeholder="Subject">
+<input id="price" placeholder="Price">
+
+<button onclick="addTutor()">Add</button>
+
+<script>
+function loadTutors() {
+    fetch("http://127.0.0.1:5000/tutors")
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("tutorList");
+            list.innerHTML = "";
+
+            data.forEach(tutor => {
+                let li = document.createElement("li");
+                li.textContent = tutor;
+                list.appendChild(li);
+            });
+        });
+}
+
+function addTutor() {
+    fetch("http://127.0.0.1:5000/tutors", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            name: document.getElementById("name").value,
+            subject: document.getElementById("subject").value,
+            price: document.getElementById("price").value
+        })
+    }).then(() => loadTutors());
+}
+</script>
