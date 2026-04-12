@@ -12,4 +12,7 @@ def create_app():
     from app.routes.tutor import tutor_bp
     app.register_blueprint(tutor_bp)
 
+    from app.routes.booking import booking_bp
+    app.register_blueprint(booking_bp)
+
     return app

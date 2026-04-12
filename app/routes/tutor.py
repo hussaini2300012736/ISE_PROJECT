@@ -28,3 +28,29 @@ def get_tutors():
 
     conn.close()
     return jsonify(tutors)
+
+# UPDATE
+@tutor_bp.route('/tutors/<int:id>', methods=['PUT'])
+def update_tutor(id):
+    data = request.json
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("UPDATE tutor SET name=?, subject=?, price=? WHERE id=?",
+              (data['name'], data['subject'], data['price'], id))
+
+    conn.commit()
+    conn.close()
+    return {"message": "Tutor updated"}
+
+# DELETE
+@tutor_bp.route('/tutors/<int:id>', methods=['DELETE'])
+def delete_tutor(id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("DELETE FROM tutor WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+    return {"message": "Tutor deleted"}

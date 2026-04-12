@@ -5,12 +5,18 @@
 <ul id="tutorList"></ul>
 
 <h3>Add Tutor</h3>
-
 <input id="name" placeholder="Name">
 <input id="subject" placeholder="Subject">
 <input id="price" placeholder="Price">
 
 <button onclick="addTutor()">Add</button>
+
+<h3>Book a Tutor</h3>
+<input id="student_name" placeholder="Your Name">
+<input id="tutor_id" placeholder="Tutor ID">
+<input id="date" placeholder="Date (YYYY-MM-DD)">
+<input id="time" placeholder="Time (e.g. 14:00)">
+<button onclick="bookTutor()">Book</button>
 
 <script>
 function loadTutors() {
@@ -38,5 +44,41 @@ function addTutor() {
             price: document.getElementById("price").value
         })
     }).then(() => loadTutors());
+}
+
+
+function bookTutor() {
+    fetch("http://127.0.0.1:5000/book", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            student_name: document.getElementById("student_name").value,
+            tutor_id: document.getElementById("tutor_id").value,
+            date: document.getElementById("date").value,
+            time: document.getElementById("time").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => alert(JSON.stringify(data)));
+}
+</script>
+
+<button onclick="loadBookings()">Show Bookings</button>
+<ul id="bookingList"></ul>
+
+<script>
+function loadBookings() {
+    fetch("http://127.0.0.1:5000/bookings")
+        .then(res => res.json())
+        .then(data => {
+            let list = document.getElementById("bookingList");
+            list.innerHTML = "";
+
+            data.forEach(b => {
+                let li = document.createElement("li");
+                li.textContent = b;
+                list.appendChild(li);
+            });
+        });
 }
 </script>
