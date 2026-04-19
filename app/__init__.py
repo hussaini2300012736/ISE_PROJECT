@@ -1,11 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
-import sqlite3
+from app.routes.auth import auth_bp, init_oauth
 
 def create_app():
     app = Flask(__name__)
-
-    app.config['DATABASE'] = 'database.db'
+    app.config.from_object('app.config.Config')
 
     CORS(app)
 
@@ -14,5 +13,11 @@ def create_app():
 
     from app.routes.booking import booking_bp
     app.register_blueprint(booking_bp)
+
+    app.register_blueprint(auth_bp)
+    init_oauth(app)
+
+    from app.routes.payment import payment_bp
+    app.register_blueprint(payment_bp)
 
     return app

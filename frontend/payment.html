@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<h2>Pay for your booking</h2>
+
+<input id="booking_id" placeholder="Booking ID">
+<input id="amount" placeholder="Amount (e.g. 50)">
+<button onclick="payOnline()">Pay Online</button>
+<button onclick="payOffline()">Pay Offline</button>
+
+<p id="message"></p>
+
+<script>
+const stripe = Stripe('pk_test_51TO4RqGSmzC74eusiTdRYwtPYDhWLPhrS0kPdON7R8wJguNCka7Oo6KljF00hVX8lWka0LNZORRLkvWMOBfoWUSt00bVDB59ad');  // ← replace with your publishable key
+
+function payOnline() {
+    fetch("http://127.0.0.1:5000/payment/create", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            booking_id: document.getElementById("booking_id").value,
+            amount: document.getElementById("amount").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById("message").textContent = "Error: " + data.error;
+        } else {
+            document.getElementById("message").textContent = "Payment intent created! Client secret: " + data.client_secret;
+        }
+    });
+}
+
+function payOffline() {
+    fetch("http://127.0.0.1:5000/payment/offline", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            booking_id: document.getElementById("booking_id").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("message").textContent = data.message;
+    });
+}
+</script>
+
+</body>
+</html>
