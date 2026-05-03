@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 import sqlite3
+from app.tasks import publish_message
 
 booking_bp = Blueprint('booking', __name__)
 
@@ -36,6 +37,13 @@ def create_booking():
 
     conn.commit()
     conn.close()
+
+    publish_message('booking_notifications', {
+        'student_name': data['student_name'],
+        'tutor_id': data['tutor_id'],
+        'date': data['date'],
+        'time': data['time']
+    })
 
     return {"message": "Booking created"}
 

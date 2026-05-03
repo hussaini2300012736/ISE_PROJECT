@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 import stripe
 from app.config import Config
+from app.tasks import publish_message
 
 payment_bp = Blueprint('payment', __name__)
 stripe.api_key = Config.STRIPE_SECRET_KEY
@@ -10,7 +11,7 @@ def create_payment():
     data = request.json
     try:
         intent = stripe.PaymentIntent.create(
-            amount=int(data['amount']) * 100,  # convert to cents
+            amount=int(data['amount']) * 100,
             currency='usd',
             metadata={'booking_id': data['booking_id']}
         )
@@ -24,6 +25,10 @@ def confirm_payment():
     try:
         intent = stripe.PaymentIntent.retrieve(data['payment_intent_id'])
         if intent.status == 'succeeded':
+            publish_message('payment_notifications', {
+                'booking_id': data['payment_intent_id'],
+                'status': 'success'
+            })
             return jsonify({'message': 'Payment successful'})
         return jsonify({'error': 'Payment not completed'}), 400
     except Exception as e:
@@ -32,7 +37,10 @@ def confirm_payment():
 @payment_bp.route('/payment/offline', methods=['POST'])
 def offline_payment():
     data = request.json
-    # Admin approves offline payment manually
+    publish_message('payment_notifications', {
+        'booking_id': data['booking_id'],
+        'status': 'offline_approved'
+    })
     return jsonify({
         'message': f"Offline payment recorded for booking {data['booking_id']}"
     })

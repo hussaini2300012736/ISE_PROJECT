@@ -20,4 +20,7 @@ def create_app():
     from app.routes.payment import payment_bp
     app.register_blueprint(payment_bp)
 
+    from app.tasks import start_workers
+    start_workers()
+
     return app
