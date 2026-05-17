@@ -1,56 +1,336 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Payment</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment — TutorBook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --accent: #e94560;
+            --light: #f5f5f0;
+            --muted: #6c757d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--light);
+            color: var(--primary);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: var(--primary);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--accent); }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: white; }
+
+        .nav-links .btn-nav {
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1.3rem;
+            border-radius: 50px;
+        }
+
+        .page-header {
+            background: var(--primary);
+            padding: 3rem 3rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(233,69,96,0.15) 0%, transparent 70%);
+            top: -100px;
+            right: 0;
+            border-radius: 50%;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .page-header p {
+            color: rgba(255,255,255,0.5);
+            margin-top: 0.5rem;
+            position: relative;
+        }
+
+        .main-content {
+            padding: 2.5rem 3rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .payment-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid #eee;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .payment-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-card h3 i { color: var(--accent); }
+
+        .payment-card .subtitle {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            background: var(--light);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            background: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-online {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-online:hover {
+            background: #c73652;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(233,69,96,0.25);
+        }
+
+        .btn-offline {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-offline:hover {
+            background: #2d2d4e;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .alert-success { background: #d4edda; color: #155724; border-left: 3px solid #28a745; }
+        .alert-error { background: #f8d7da; color: #721c24; border-left: 3px solid var(--accent); }
+        .alert-info { background: #cce5ff; color: #004085; border-left: 3px solid #004085; }
+
+        .divider {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 42%;
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+    </style>
 </head>
 <body>
 
-<h2>Pay for your booking</h2>
+    <nav>
+        <a href="index.html" class="nav-logo">Tutor<span>Book</span></a>
+        <div class="nav-links">
+            <a href="tutors.html">Tutors</a>
+            <a href="booking.html">Book</a>
+            <a href="payment.html" class="active">Payment</a>
+            <a href="login.html" class="btn-nav">Login</a>
+        </div>
+    </nav>
 
-<input id="booking_id" placeholder="Booking ID">
-<input id="amount" placeholder="Amount (e.g. 50)">
-<button onclick="payOnline()">Pay Online</button>
-<button onclick="payOffline()">Pay Offline</button>
+    <div class="page-header">
+        <h1>Payment</h1>
+        <p>Pay for your tutoring session securely online or offline</p>
+    </div>
 
-<p id="message"></p>
+    <div class="main-content">
 
-<script>
-const stripe = Stripe('pk_test_51TO4RqGSmzC74eusiTdRYwtPYDhWLPhrS0kPdON7R8wJguNCka7Oo6KljF00hVX8lWka0LNZORRLkvWMOBfoWUSt00bVDB59ad');  // ← replace with your publishable key
+        <!-- ONLINE PAYMENT -->
+        <div class="payment-card">
+            <h3><i class="bi bi-credit-card"></i> Online Payment</h3>
+            <p class="subtitle">Pay securely via Stripe. Your card details are never stored.</p>
 
-function payOnline() {
-    fetch("http://127.0.0.1:5000/payment/create", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            booking_id: document.getElementById("booking_id").value,
-            amount: document.getElementById("amount").value
+            <div class="form-group">
+                <label>Booking ID</label>
+                <input id="booking_id_online" placeholder="Enter your booking ID" type="number">
+            </div>
+
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input id="amount" placeholder="e.g. 50" type="number">
+            </div>
+
+            <button class="btn btn-online" onclick="payOnline()">
+                <i class="bi bi-lock"></i> Pay Securely Online
+            </button>
+
+            <div id="onlineAlert" class="alert"></div>
+        </div>
+
+        <div class="divider">or</div>
+
+        <!-- OFFLINE PAYMENT -->
+        <div class="payment-card">
+            <h3><i class="bi bi-cash-stack"></i> Offline Payment</h3>
+            <p class="subtitle">Request offline payment. An admin will review and approve your request.</p>
+
+            <div class="form-group">
+                <label>Booking ID</label>
+                <input id="booking_id_offline" placeholder="Enter your booking ID" type="number">
+            </div>
+
+            <button class="btn btn-offline" onclick="payOffline()">
+                <i class="bi bi-send"></i> Request Offline Payment
+            </button>
+
+            <div id="offlineAlert" class="alert"></div>
+        </div>
+
+    </div>
+
+    <script>
+    const stripe = Stripe('YOUR_PUBLISHABLE_KEY_HERE');
+
+    function payOnline() {
+        fetch("http://127.0.0.1:5000/payment/create", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                booking_id: document.getElementById("booking_id_online").value,
+                amount: document.getElementById("amount").value
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.error) {
-            document.getElementById("message").textContent = "Error: " + data.error;
-        } else {
-            document.getElementById("message").textContent = "Payment intent created! Client secret: " + data.client_secret;
-        }
-    });
-}
+        .then(res => res.json())
+        .then(data => {
+            let alert = document.getElementById("onlineAlert");
+            alert.style.display = "block";
+            if (data.error) {
+                alert.className = "alert alert-error";
+                alert.textContent = "✗ " + data.error;
+            } else {
+                alert.className = "alert alert-success";
+                alert.textContent = "✓ Payment intent created successfully! Processing...";
+            }
+        });
+    }
 
-function payOffline() {
-    fetch("http://127.0.0.1:5000/payment/offline", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            booking_id: document.getElementById("booking_id").value
+    function payOffline() {
+        fetch("http://127.0.0.1:5000/payment/offline", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                booking_id: document.getElementById("booking_id_offline").value
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("message").textContent = data.message;
-    });
-}
-</script>
+        .then(res => res.json())
+        .then(data => {
+            let alert = document.getElementById("offlineAlert");
+            alert.style.display = "block";
+            alert.className = "alert alert-success";
+            alert.textContent = "✓ " + data.message;
+        });
+    }
+    </script>
 
 </body>
 </html>
