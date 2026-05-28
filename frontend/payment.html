@@ -226,11 +226,36 @@
         .divider::after { right: 0; }
     </style>
 </head>
+<script>
+// Check session and update navbar
+fetch('http://127.0.0.1:5000/auth/user')
+    .then(res => res.json())
+    .then(user => {
+        const navLinks = document.getElementById('navLinks');
+        if (user) {
+            navLinks.innerHTML = `
+                <a href="/auth/dashboard">Dashboard</a>
+                <a href="tutors.html">Tutors</a>
+                <a href="booking.html">Book</a>
+                <a href="payment.html">Payment</a>
+                <span style="color: rgba(255,255,255,0.6); margin-left: 2rem;">👤 ${user.name}</span>
+                <a href="http://127.0.0.1:5000/auth/logout" class="btn-nav" style="margin-left: 1rem;">Logout</a>
+            `;
+        } else {
+            navLinks.innerHTML = `
+                <a href="tutors.html">Tutors</a>
+                <a href="booking.html">Book</a>
+                <a href="payment.html">Payment</a>
+                <a href="http://127.0.0.1:5000/auth/loginpage" class="btn-nav">Login</a>
+            `;
+        }
+    });
+</script>
 <body>
 
     <nav>
         <a href="index.html" class="nav-logo">Tutor<span>Book</span></a>
-        <div class="nav-links">
+        <div class="nav-links" id="navLinks">
             <a href="tutors.html">Tutors</a>
             <a href="booking.html">Book</a>
             <a href="payment.html" class="active">Payment</a>
