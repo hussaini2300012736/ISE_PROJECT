@@ -33,4 +33,7 @@ media/
 
 # Collected static files
 staticfiles/
-static_root/
+static_root/app/config.py
+database.db
+venv/
+__pycache__/

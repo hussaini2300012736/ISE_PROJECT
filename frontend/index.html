@@ -24,7 +24,6 @@
             overflow-x: hidden;
         }
 
-        /* NAVBAR */
         nav {
             background: var(--primary);
             padding: 1.2rem 2rem;
@@ -65,7 +64,6 @@
 
         .nav-links .btn-nav:hover { background: #c73652; color: white; }
 
-        /* HERO */
         .hero {
             min-height: 92vh;
             display: flex;
@@ -180,7 +178,6 @@
             background: rgba(255,255,255,0.05);
         }
 
-        /* STATS */
         .stats {
             background: white;
             padding: 3rem 5rem;
@@ -195,16 +192,9 @@
             color: var(--accent);
         }
 
-        .stat-item p {
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
+        .stat-item p { color: var(--muted); font-size: 0.9rem; }
 
-        /* FEATURES */
-        .features {
-            padding: 6rem 5rem;
-            background: var(--light);
-        }
+        .features { padding: 6rem 5rem; background: var(--light); }
 
         .section-label {
             font-size: 0.8rem;
@@ -257,19 +247,9 @@
             color: var(--accent);
         }
 
-        .feature-card h5 {
-            font-weight: 600;
-            margin-bottom: 0.7rem;
-            color: var(--primary);
-        }
+        .feature-card h5 { font-weight: 600; margin-bottom: 0.7rem; color: var(--primary); }
+        .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
 
-        .feature-card p {
-            color: var(--muted);
-            font-size: 0.9rem;
-            line-height: 1.7;
-        }
-
-        /* CTA */
         .cta {
             background: var(--primary);
             padding: 6rem 5rem;
@@ -298,13 +278,8 @@
             position: relative;
         }
 
-        .cta p {
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 2rem;
-            position: relative;
-        }
+        .cta p { color: rgba(255,255,255,0.6); margin-bottom: 2rem; position: relative; }
 
-        /* FOOTER */
         footer {
             background: #111;
             color: rgba(255,255,255,0.4);
@@ -318,49 +293,28 @@
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav>
-        <a href="index.html" class="nav-logo">Tutor<span>Book</span></a>
-        <div class="nav-links" id="navLinks">
-            <a href="tutors.html">Tutors</a>
-            <a href="booking.html">Book</a>
-            <a href="payment.html">Payment</a>
-            <a href="login.html" class="btn-nav">Login</a>
-        </div>
+        <a href="/" class="nav-logo">Tutor<span>Book</span></a>
+        <div class="nav-links" id="navLinks">Loading...</div>
     </nav>
 
-    <!-- HERO -->
     <section class="hero">
         <div class="hero-content">
             <div class="hero-tag">✦ Smart Tutoring Platform</div>
             <h1>Learn Faster.<br>With the <span>Right</span> Tutor.</h1>
             <p>Browse expert tutors, book sessions instantly, and pay securely — all in one place.</p>
-            <a href="tutors.html" class="btn-primary-custom">Find a Tutor</a>
-            <a href="login.html" class="btn-outline-custom">Get Started</a>
+            <a href="/tutors-page" class="btn-primary-custom">Find a Tutor</a>
+            <a href="/auth/login" class="btn-outline-custom" id="heroLoginBtn">Get Started</a>
         </div>
     </section>
 
-    <!-- STATS -->
     <div class="stats">
-        <div class="stat-item">
-            <h3>50+</h3>
-            <p>Expert Tutors</p>
-        </div>
-        <div class="stat-item">
-            <h3>200+</h3>
-            <p>Sessions Booked</p>
-        </div>
-        <div class="stat-item">
-            <h3>3</h3>
-            <p>Subjects Available</p>
-        </div>
-        <div class="stat-item">
-            <h3>100%</h3>
-            <p>Secure Payments</p>
-        </div>
+        <div class="stat-item"><h3>50+</h3><p>Expert Tutors</p></div>
+        <div class="stat-item"><h3>200+</h3><p>Sessions Booked</p></div>
+        <div class="stat-item"><h3>3</h3><p>Subjects Available</p></div>
+        <div class="stat-item"><h3>100%</h3><p>Secure Payments</p></div>
     </div>
 
-    <!-- FEATURES -->
     <section class="features">
         <div class="section-label">Why TutorBook</div>
         <div class="section-title">Everything you need<br>to learn better.</div>
@@ -391,17 +345,45 @@
         </div>
     </section>
 
-    <!-- CTA -->
     <section class="cta">
         <h2>Ready to start learning?</h2>
         <p>Join hundreds of students already booking sessions on TutorBook.</p>
-        <a href="login.html" class="btn-primary-custom">Login with Google</a>
+        <a href="/auth/login" class="btn-primary-custom" id="ctaBtn">Login with Google</a>
     </section>
 
-    <!-- FOOTER -->
     <footer>
         <p>© 2026 <span>TutorBook</span> — Built with Flask & ❤️</p>
     </footer>
+
+    <script>
+    fetch('/auth/user')
+        .then(res => res.json())
+        .then(user => {
+            const nav = document.getElementById('navLinks');
+            if (user) {
+                nav.innerHTML = `
+                    <a href="/tutors-page">Tutors</a>
+                    <a href="/booking-page">Book</a>
+                    <a href="/payment-page">Payment</a>
+                    <a href="/dashboard">
+                        <img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;margin-left:2rem;vertical-align:middle;border:2px solid #e94560;">
+                        <span style="color:white;margin-left:0.5rem;font-size:0.9rem;">${user.name.split(' ')[0]}</span>
+                    </a>
+                    <a href="/auth/logout" class="btn-nav" style="margin-left:1rem;">Logout</a>
+                `;
+                // If logged in, change CTA buttons to go to dashboard
+                document.getElementById('heroLoginBtn').href = '/dashboard';
+                document.getElementById('heroLoginBtn').textContent = 'Go to Dashboard';
+                document.getElementById('ctaBtn').href = '/dashboard';
+                document.getElementById('ctaBtn').textContent = 'Go to Dashboard';
+            } else {
+                nav.innerHTML = `
+                    <a href="/tutors-page">Tutors</a>
+                    <a href="/auth/login" class="btn-nav">Login</a>
+                `;
+            }
+        });
+    </script>
 
 </body>
 </html>

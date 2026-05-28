@@ -120,9 +120,7 @@
             margin-bottom: 2rem;
         }
 
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
+        .form-group { margin-bottom: 1.2rem; }
 
         label {
             display: block;
@@ -192,54 +190,16 @@
             align-items: flex-start;
         }
 
-        .info-box i {
-            color: var(--accent);
-            font-size: 1.2rem;
-            margin-top: 0.1rem;
-        }
+        .info-box i { color: var(--accent); font-size: 1.2rem; margin-top: 0.1rem; }
 
-        .info-box p {
-            font-size: 0.85rem;
-            color: var(--muted);
-            line-height: 1.6;
-        }
+        .info-box p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
     </style>
 </head>
-<script>
-// Check session and update navbar
-fetch('http://127.0.0.1:5000/auth/user')
-    .then(res => res.json())
-    .then(user => {
-        const navLinks = document.getElementById('navLinks');
-        if (user) {
-            navLinks.innerHTML = `
-                <a href="/auth/dashboard">Dashboard</a>
-                <a href="tutors.html">Tutors</a>
-                <a href="booking.html">Book</a>
-                <a href="payment.html">Payment</a>
-                <span style="color: rgba(255,255,255,0.6); margin-left: 2rem;">👤 ${user.name}</span>
-                <a href="http://127.0.0.1:5000/auth/logout" class="btn-nav" style="margin-left: 1rem;">Logout</a>
-            `;
-        } else {
-            navLinks.innerHTML = `
-                <a href="tutors.html">Tutors</a>
-                <a href="booking.html">Book</a>
-                <a href="payment.html">Payment</a>
-                <a href="http://127.0.0.1:5000/auth/loginpage" class="btn-nav">Login</a>
-            `;
-        }
-    });
-</script>
 <body>
 
     <nav>
-        <a href="index.html" class="nav-logo">Tutor<span>Book</span></a>
-        <div class="nav-links" id="navLinks">
-            <a href="tutors.html">Tutors</a>
-            <a href="booking.html" class="active">Book</a>
-            <a href="payment.html">Payment</a>
-            <a href="login.html" class="btn-nav">Login</a>
-        </div>
+        <a href="/" class="nav-logo">Tutor<span>Book</span></a>
+        <div class="nav-links" id="navLinks">Loading...</div>
     </nav>
 
     <div class="page-header">
@@ -254,7 +214,7 @@ fetch('http://127.0.0.1:5000/auth/user')
 
             <div class="info-box">
                 <i class="bi bi-info-circle"></i>
-                <p>You can find tutor IDs on the <a href="tutors.html" style="color: var(--accent);">Tutors page</a>. Make sure the tutor is available at your chosen time.</p>
+                <p>You can find tutor IDs on the <a href="/tutors-page" style="color: var(--accent);">Tutors page</a>. Make sure the tutor is available at your chosen time.</p>
             </div>
 
             <div class="form-group">
@@ -286,8 +246,32 @@ fetch('http://127.0.0.1:5000/auth/user')
     </div>
 
     <script>
+    // Update navbar based on session
+    fetch('/auth/user')
+        .then(res => res.json())
+        .then(user => {
+            const nav = document.getElementById('navLinks');
+            if (user) {
+                nav.innerHTML = `
+                    <a href="/tutors-page">Tutors</a>
+                    <a href="/booking-page" class="active">Book</a>
+                    <a href="/payment-page">Payment</a>
+                    <a href="/dashboard">
+                        <img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;margin-left:2rem;vertical-align:middle;border:2px solid #e94560;">
+                        <span style="color:white;margin-left:0.5rem;font-size:0.9rem;">${user.name.split(' ')[0]}</span>
+                    </a>
+                    <a href="/auth/logout" class="btn-nav" style="margin-left:1rem;">Logout</a>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <a href="/tutors-page">Tutors</a>
+                    <a href="/auth/login" class="btn-nav">Login</a>
+                `;
+            }
+        });
+
     function bookTutor() {
-        fetch("http://127.0.0.1:5000/book", {
+        fetch("/book", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({

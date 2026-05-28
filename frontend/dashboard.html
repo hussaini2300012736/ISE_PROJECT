@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard — TutorBook</title>
+    <title>Dashboard — TutorBook</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -94,7 +94,6 @@
             margin: 0 auto;
         }
 
-        /* STAT CARDS */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -131,12 +130,8 @@
             color: var(--primary);
         }
 
-        .stat-card p {
-            color: var(--muted);
-            font-size: 0.85rem;
-        }
+        .stat-card p { color: var(--muted); font-size: 0.85rem; }
 
-        /* SECTION CARD */
         .section-card {
             background: white;
             border-radius: 16px;
@@ -157,7 +152,6 @@
 
         .section-card h3 i { color: var(--accent); }
 
-        /* BOOKINGS TABLE */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -182,7 +176,6 @@
         }
 
         tr:last-child td { border-bottom: none; }
-
         tr:hover td { background: var(--light); }
 
         .badge {
@@ -207,14 +200,6 @@
             transition: all 0.2s;
         }
 
-        .btn-approve {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-approve:hover { background: #c73652; }
-
-        /* OFFLINE PAYMENT */
         .form-row {
             display: flex;
             gap: 1rem;
@@ -233,16 +218,17 @@
             transition: border-color 0.2s;
         }
 
-        input:focus {
-            border-color: var(--accent);
-            background: white;
-        }
+        input:focus { border-color: var(--accent); background: white; }
 
         .btn-primary {
             background: var(--accent);
             color: white;
             padding: 0.8rem 1.8rem;
             border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
         }
 
         .btn-primary:hover { background: #c73652; }
@@ -256,51 +242,79 @@
         }
 
         .alert-success { background: #d4edda; color: #155724; }
+
+        .welcome-banner {
+            background: var(--primary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(233,69,96,0.2) 0%, transparent 70%);
+            right: -50px;
+            top: -50px;
+            border-radius: 50%;
+        }
+
+        .welcome-banner img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-banner .welcome-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-banner h2 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .welcome-banner p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
     </style>
 </head>
-<script>
-// Check session and update navbar
-fetch('http://127.0.0.1:5000/auth/user')
-    .then(res => res.json())
-    .then(user => {
-        const navLinks = document.getElementById('navLinks');
-        if (user) {
-            navLinks.innerHTML = `
-                <a href="/auth/dashboard">Dashboard</a>
-                <a href="tutors.html">Tutors</a>
-                <a href="booking.html">Book</a>
-                <a href="payment.html">Payment</a>
-                <span style="color: rgba(255,255,255,0.6); margin-left: 2rem;">👤 ${user.name}</span>
-                <a href="http://127.0.0.1:5000/auth/logout" class="btn-nav" style="margin-left: 1rem;">Logout</a>
-            `;
-        } else {
-            navLinks.innerHTML = `
-                <a href="tutors.html">Tutors</a>
-                <a href="booking.html">Book</a>
-                <a href="payment.html">Payment</a>
-                <a href="http://127.0.0.1:5000/auth/loginpage" class="btn-nav">Login</a>
-            `;
-        }
-    });
-</script>
 <body>
 
     <nav>
-        <a href="index.html" class="nav-logo">Tutor<span>Book</span></a>
-        <div class="nav-links" id="navLinks">
-            <a href="tutors.html">Tutors</a>
-            <a href="booking.html">Book</a>
-            <a href="payment.html">Payment</a>
-            <a href="login.html" class="btn-nav">Login</a>
-        </div>
+        <a href="/" class="nav-logo">Tutor<span>Book</span></a>
+        <div class="nav-links" id="navLinks">Loading...</div>
     </nav>
 
     <div class="page-header">
-        <h1>Admin Dashboard</h1>
+        <h1>Dashboard</h1>
         <p>Manage bookings and approve offline payments</p>
     </div>
 
     <div class="main-content">
+
+        <!-- WELCOME BANNER -->
+        <div class="welcome-banner" id="welcomeBanner" style="display:none;">
+            <img id="userAvatar" src="" alt="avatar">
+            <div class="welcome-text">
+                <h2 id="welcomeName">Welcome back!</h2>
+                <p id="welcomeEmail"></p>
+            </div>
+        </div>
 
         <!-- STATS -->
         <div class="stats-row">
@@ -360,8 +374,35 @@ fetch('http://127.0.0.1:5000/auth/user')
     </div>
 
     <script>
+    // Update navbar and welcome banner
+    fetch('/auth/user')
+        .then(res => res.json())
+        .then(user => {
+            const nav = document.getElementById('navLinks');
+            if (user) {
+                nav.innerHTML = `
+                    <a href="/tutors-page">Tutors</a>
+                    <a href="/booking-page">Book</a>
+                    <a href="/payment-page">Payment</a>
+                    <a href="/dashboard">
+                        <img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;margin-left:2rem;vertical-align:middle;border:2px solid #e94560;">
+                        <span style="color:white;margin-left:0.5rem;font-size:0.9rem;">${user.name.split(' ')[0]}</span>
+                    </a>
+                    <a href="/auth/logout" class="btn-nav" style="margin-left:1rem;">Logout</a>
+                `;
+
+                // Show welcome banner
+                document.getElementById('welcomeBanner').style.display = 'flex';
+                document.getElementById('userAvatar').src = user.picture;
+                document.getElementById('welcomeName').textContent = `Welcome back, ${user.name.split(' ')[0]}!`;
+                document.getElementById('welcomeEmail').textContent = user.email;
+            } else {
+                window.location.href = '/auth/login';
+            }
+        });
+
     function loadBookings() {
-        fetch("http://127.0.0.1:5000/bookings")
+        fetch("/bookings")
             .then(res => res.json())
             .then(data => {
                 let tbody = document.getElementById("bookingsTable");
@@ -388,7 +429,7 @@ fetch('http://127.0.0.1:5000/auth/user')
     }
 
     function approvePayment() {
-        fetch("http://127.0.0.1:5000/payment/offline", {
+        fetch("/payment/offline", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({

@@ -127,9 +127,7 @@
             margin-bottom: 1.8rem;
         }
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
+        .form-group { margin-bottom: 1rem; }
 
         label {
             display: block;
@@ -150,10 +148,7 @@
             transition: border-color 0.2s;
         }
 
-        input:focus {
-            border-color: var(--accent);
-            background: white;
-        }
+        input:focus { border-color: var(--accent); background: white; }
 
         .btn {
             width: 100%;
@@ -172,26 +167,15 @@
             gap: 0.5rem;
         }
 
-        .btn-online {
-            background: var(--accent);
-            color: white;
-        }
-
+        .btn-online { background: var(--accent); color: white; }
         .btn-online:hover {
             background: #c73652;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(233,69,96,0.25);
         }
 
-        .btn-offline {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-offline:hover {
-            background: #2d2d4e;
-            transform: translateY(-2px);
-        }
+        .btn-offline { background: var(--primary); color: white; }
+        .btn-offline:hover { background: #2d2d4e; transform: translateY(-2px); }
 
         .alert {
             padding: 1rem 1.2rem;
@@ -203,7 +187,6 @@
 
         .alert-success { background: #d4edda; color: #155724; border-left: 3px solid #28a745; }
         .alert-error { background: #f8d7da; color: #721c24; border-left: 3px solid var(--accent); }
-        .alert-info { background: #cce5ff; color: #004085; border-left: 3px solid #004085; }
 
         .divider {
             text-align: center;
@@ -226,41 +209,11 @@
         .divider::after { right: 0; }
     </style>
 </head>
-<script>
-// Check session and update navbar
-fetch('http://127.0.0.1:5000/auth/user')
-    .then(res => res.json())
-    .then(user => {
-        const navLinks = document.getElementById('navLinks');
-        if (user) {
-            navLinks.innerHTML = `
-                <a href="/auth/dashboard">Dashboard</a>
-                <a href="tutors.html">Tutors</a>
-                <a href="booking.html">Book</a>
-                <a href="payment.html">Payment</a>
-                <span style="color: rgba(255,255,255,0.6); margin-left: 2rem;">👤 ${user.name}</span>
-                <a href="http://127.0.0.1:5000/auth/logout" class="btn-nav" style="margin-left: 1rem;">Logout</a>
-            `;
-        } else {
-            navLinks.innerHTML = `
-                <a href="tutors.html">Tutors</a>
-                <a href="booking.html">Book</a>
-                <a href="payment.html">Payment</a>
-                <a href="http://127.0.0.1:5000/auth/loginpage" class="btn-nav">Login</a>
-            `;
-        }
-    });
-</script>
 <body>
 
     <nav>
-        <a href="index.html" class="nav-logo">Tutor<span>Book</span></a>
-        <div class="nav-links" id="navLinks">
-            <a href="tutors.html">Tutors</a>
-            <a href="booking.html">Book</a>
-            <a href="payment.html" class="active">Payment</a>
-            <a href="login.html" class="btn-nav">Login</a>
-        </div>
+        <a href="/" class="nav-logo">Tutor<span>Book</span></a>
+        <div class="nav-links" id="navLinks">Loading...</div>
     </nav>
 
     <div class="page-header">
@@ -270,7 +223,6 @@ fetch('http://127.0.0.1:5000/auth/user')
 
     <div class="main-content">
 
-        <!-- ONLINE PAYMENT -->
         <div class="payment-card">
             <h3><i class="bi bi-credit-card"></i> Online Payment</h3>
             <p class="subtitle">Pay securely via Stripe. Your card details are never stored.</p>
@@ -294,7 +246,6 @@ fetch('http://127.0.0.1:5000/auth/user')
 
         <div class="divider">or</div>
 
-        <!-- OFFLINE PAYMENT -->
         <div class="payment-card">
             <h3><i class="bi bi-cash-stack"></i> Offline Payment</h3>
             <p class="subtitle">Request offline payment. An admin will review and approve your request.</p>
@@ -314,10 +265,31 @@ fetch('http://127.0.0.1:5000/auth/user')
     </div>
 
     <script>
+    // Update navbar based on session
+    fetch('/auth/user')
+        .then(res => res.json())
+        .then(user => {
+            const nav = document.getElementById('navLinks');
+            if (user) {
+                nav.innerHTML = `
+                    <a href="/tutors-page">Tutors</a>
+                    <a href="/booking-page">Book</a>
+                    <a href="/payment-page" class="active">Payment</a>
+                    <a href="/dashboard">
+                        <img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;margin-left:2rem;vertical-align:middle;border:2px solid #e94560;">
+                        <span style="color:white;margin-left:0.5rem;font-size:0.9rem;">${user.name.split(' ')[0]}</span>
+                    </a>
+                    <a href="/auth/logout" class="btn-nav" style="margin-left:1rem;">Logout</a>
+                `;
+            } else {
+                window.location.href = '/auth/login';
+            }
+        });
+
     const stripe = Stripe('YOUR_PUBLISHABLE_KEY_HERE');
 
     function payOnline() {
-        fetch("http://127.0.0.1:5000/payment/create", {
+        fetch("/payment/create", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
@@ -340,7 +312,7 @@ fetch('http://127.0.0.1:5000/auth/user')
     }
 
     function payOffline() {
-        fetch("http://127.0.0.1:5000/payment/offline", {
+        fetch("/payment/offline", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
